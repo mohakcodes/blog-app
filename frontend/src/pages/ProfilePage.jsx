@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ProfilePosts from '../components/ProfilePosts'
 import { Link, useLocation } from 'react-router-dom';
 import { UserContext } from '../context/Usercontext';
 import axios from 'axios';
