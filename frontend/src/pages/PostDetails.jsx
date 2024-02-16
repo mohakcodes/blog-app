@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import {BiEdit} from 'react-icons/bi'
 import {MdDelete} from 'react-icons/md'
 import Comments from '../components/Comments'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import axios from "axios"
 import { URL,IF } from '../url.js'
 import { UserContext } from '../context/Usercontext'
@@ -17,21 +17,34 @@ const PostDetails = () => {
 
     const postId = useParams().id;
 
-  const fetchPost = async() => {
-    setLoader(true);
-    try {
-        const res = await axios.get(`${URL}/api/post/${postId}`);
-        setPost(res.data);
-        setLoader(false);
-    }
-    catch (err) {
-        console.log(err);
-    }
-  }
+    const navigate = useNavigate();
 
-  useEffect(()=>{
-    fetchPost();
-  },[])
+    const fetchPost = async() => {
+        setLoader(true);
+        try {
+            const res = await axios.get(`${URL}/api/post/${postId}`);
+            setPost(res.data);
+            setLoader(false);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleDeletePost = async() => {
+        try{
+            const res = await axios.delete(`${URL}/api/post/${postId}`,{withCredentials:true})
+            console.log("del post",res.data);
+            navigate("/")
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    useEffect(()=>{
+        fetchPost();
+    },[postId])
 
   return (
     <div>
@@ -43,8 +56,8 @@ const PostDetails = () => {
                     {
                         user?._id === post?.userId &&
                         <div className='flex flex-col sm:flex-row justify-center items-center space-x-0 sm:space-x-2 space-y-2 sm:space-y-0'>
-                            <p><BiEdit/></p>
-                            <p><MdDelete/></p>
+                            <p style={{ fontSize: '26px' }} onClick={()=>navigate(`/edit/${postId}`)}><BiEdit/></p>
+                            <p style={{ fontSize: '26px' }} onClick={()=>handleDeletePost()}><MdDelete/></p>
                         </div>
                     }
                 </div>
@@ -58,9 +71,9 @@ const PostDetails = () => {
                 <img 
                 src={IF+post.photo} 
                 alt="img" 
-                className='w-[65%] mx-auto my-8'
+                className='w-[50%] mx-auto my-8'
                 />
-                <p className='mx-auto'>{post.desc}</p>
+                <p style={{ fontSize: '24px', fontFamily:'sans-serif', backgroundColor:"wheat" }} className='mx-auto p-4'>{post.desc}</p>
                 <div className='flex items-center my-6 space-x-4 font-semibold'>
                     <p>Categories :</p>
                     <div className='flex justify-center items-center space-x-2'>
@@ -70,23 +83,6 @@ const PostDetails = () => {
                             ))
                         }
                     </div>
-                </div>
-                <div className='flex flex-col'>
-                    <h3 className='mb-2 font-semibold'>Comments :</h3>
-                    {/*comment*/}
-                    <Comments/>
-                    <Comments/>
-                    <Comments/>
-                    <Comments/>
-                </div>
-                {/* write a comment */}
-                <div className='flex flex-col mb-4 md:flex-row justify-center items-center space-x-2'>
-                    <input
-                        className='w-[80%] px-4 mt-2 py-3 md:mt-0 border-black border-2'
-                        type="text"
-                        placeholder='Write a Comment'
-                    />
-                    <button className='bg-emerald-400 text-black hover:bg-black hover:text-emerald-400 font-bold px-[2px] sm:px-[6px] py-[2px] sm:py-[6px] w-[40%] md:w-[20%] mt-4 md:mt-0 border-black'>Add Comment</button>
                 </div>
             </div>
         }

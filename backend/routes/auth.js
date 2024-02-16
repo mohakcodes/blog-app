@@ -32,6 +32,7 @@ router.post("/signup" , async(req,res)=>{
 router.post("/login" , async(req,res)=>{
     try {
         const user = await User.findOne({email:req.body.email});
+        console.log("user",user);
         if(!user){
             res.status(404).json("User Not Found");
             return;
@@ -51,7 +52,6 @@ router.post("/login" , async(req,res)=>{
         res.status(200).json(userInfoExceptPassword);
     } 
     catch (err) {
-        console.log("here");
         res.status(500).json(err);
     }
 })
@@ -69,7 +69,7 @@ router.get("/logout" , async(req,res)=>{
 //On Refresh
 router.get("/refresh",(req,res)=>{
     let token = req.header("cookie");
-    if (token.startsWith("token=")) {
+    if (token && token.startsWith("token=")) {
         token = token.slice(6, token.length).trimLeft();
     }
     jwt.verify(token, process.env.SECRETKEY, {}, async(err,data)=>{

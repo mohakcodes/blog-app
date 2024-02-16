@@ -29,6 +29,7 @@ router.put("/:id",verifyToken, async(req,res)=>{
 
 //Delete
 router.delete("/:id",verifyToken, async(req,res)=>{
+    console.log("okk");
     try {
         await Post.findByIdAndDelete(req.params.id);
         res.status(200).json("Post Has Been Deleted");
